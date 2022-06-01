@@ -1,0 +1,6 @@
+/data/
+/dev/
+/output/
+/src/
+/.devcontainer
+__pycache__/
