@@ -20,8 +20,20 @@ import models
 import triplet_mining as tm
 from loss_fn  import TripletLoss
 from optimizer import WarmupOptimizer
+import argparse
+
 
 if __name__ =="__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=str, default="../input/train.csv", required=False)
+    parser.add_argument("--eval", type=str, default="../input/eval.csv", required=False)
+    parser.add_argument("--epochs", type=int, default=100, required=False)
+    parser.add_argument("--batch_size", type=int, default=128, required=False)
+
+    parser.parse_args()
+    
+
     folderpath = os.path.join(cfg.OUTPUT_DIR,cfg.RUN_ID,cfg.LOG_DIR)
     os.makedirs(folderpath,exist_ok=True)
     folderpath = os.path.join(cfg.OUTPUT_DIR,cfg.RUN_ID,cfg.FILE_DIR)
@@ -30,8 +42,8 @@ if __name__ =="__main__":
     os.makedirs(folderpath,exist_ok=True)
     
 
-    dftrain  = pd.read_csv(cfg.INPUT_FILE_TRAIN).iloc[:,1:]
-    dfeval = pd.read_csv(cfg.INPUT_FILE_EVAL).iloc[:,1:]
+    dftrain  = pd.read_csv(parser.input).iloc[:,1:]
+    dfeval = pd.read_csv(parser.eval).iloc[:,1:]
     dftrain = dftrain[dftrain["context"].notnull()].reset_index(drop=True)
     dfeval = dfeval[dfeval["context"].notnull()].reset_index(drop=True)
     dftrain = dftrain[dftrain["orig_context"].notnull()].reset_index(drop=True)
@@ -90,7 +102,7 @@ if __name__ =="__main__":
     LOGPATH = os.path.join(cfg.OUTPUT_DIR,cfg.RUN_ID,cfg.LOG_DIR)
     writer = SummaryWriter(log_dir=LOGPATH)
     global_start_time = time.time()
-    for epoch in range(cfg.EPOCHS):
+    for epoch in range(parser.epochs):
         print(f"INIT EPOCH {epoch}")
         if epoch%cfg.TRIPLET_MINE_EVERY_N_STEPS==0:
             print("init triplet mining")
@@ -107,10 +119,10 @@ if __name__ =="__main__":
         eval_ds = data.TripletDataset(triplet_ds_eval,token_mapping)
 
         train_dataloader = DataLoader(train_ds,\
-                        batch_size=cfg.BATCH_SIZE,\
+                        batch_size=parser.batch_size,\
                         shuffle=True)
         eval_dataloader = DataLoader(eval_ds,\
-                            batch_size=cfg.BATCH_SIZE,\
+                            batch_size=parser.batch_size,\
                             shuffle=False)
         
 
