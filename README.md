@@ -10,6 +10,12 @@ The default arguments were optimized for NVIDIA RTC 1080 Ti GPU. Additional conf
 
 `Dockerfile` can be used to replicate the running environment.
 
+To monitor the training:
+```
+tensorboard --logdir output/{runid}/log
+```
+The **runid** can be found and modified in `config.py`
+
 
 
 ### Abstract
